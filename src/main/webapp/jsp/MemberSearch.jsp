@@ -5,7 +5,6 @@
 <html>
 <head>
     <title>会員一覧 | 会員管理システム</title>
-    <% System.out.println(request.getContextPath()); %>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js" integrity="sha512-AhAMtLXTbhq+dyODjwnLcSlytykROxgUhR+gDZmRavVCNj6Gjta5l+8TqGAyLZiNsvJhh3J83ElyhU+5dS2OZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -250,7 +249,8 @@
                 const a = document.createElement('a');
 
                 a.className = 'content';
-                a.href = 'member-searh.aspx?p=' + (pageNumber - 1);
+                const pathname = location.pathname;
+                a.href = pathname + '?p=' + (pageNumber - 1);
                 a.innerText = '<';
 
                 li.appendChild(a);
@@ -268,7 +268,9 @@
                 const p = document.createElement('p');
 
                 a.className = 'content';
-                a.href = 'member-searh.aspx';
+
+                const pathname = location.pathname;
+                a.href = pathname;
                 a.innerText = '1';
 
                 li.appendChild(a);
@@ -301,7 +303,9 @@
                     const a = document.createElement('a');
 
                     a.className = 'content';
-                    a.href = 'member-searh.aspx?p=' + page;
+
+                    const pathname = location.pathname;
+                    a.href = pathname + '?p=' + page;
                     a.innerText = page;
 
                     li.appendChild(a);
@@ -326,7 +330,9 @@
                 pagerUlObj.appendChild(p);
 
                 a.className = 'content';
-                a.href = 'member-searh.aspx?p=' + maxPageNumber;
+                
+                const pathname = location.pathname;
+                a.href = pathname + '?p=' + maxPageNumber;
                 a.innerText = maxPageNumber;
 
                 li.appendChild(a);
@@ -343,7 +349,9 @@
                 const a = document.createElement('a');
 
                 a.className = 'content';
-                a.href = 'member-searh.aspx?p=' + (pageNumber + 1);
+
+                const pathname = location.pathname;
+                a.href = pathname + '?p=' + (pageNumber + 1);
                 a.innerText = '>';
 
                 li.appendChild(a);
@@ -637,21 +645,19 @@
                 tableData.push(rowData);
             }
 
-            // テーブル情報と、並び替えの基準となるカラム名、並び替え順をC#側に渡して
-            // C#側でソートしたものを受け取る
+            // テーブル情報と、並び替えの基準となるカラム名、並び替え順をサーバ側に渡して
+            // サーバ側でソートしたものを受け取る
             // 受け取ったものをテーブルに入れて画面上での並び替えを完了させる
             $.ajax({
                 type: "POST",
-                url: '<%= request.getContextPath() %>/MemberSearchServlet',
-                contentType: "application/json",
-                data: JSON.stringify({
+                url: '<%= request.getContextPath() %>/MemberSearch',
+                data: {
                     "tableData": tableData,
                     "columnName": columnName,
-                    "sortMethod": desc ? "desc" : "asc"
-                }),
+                    "sortMethod": desc ? "desc" : "asc",
+                    "action": "tableSort"
+                },
                 success: function (data) {
-                    // alert("成功: " + data.d);
-
                     // ソートされたテーブル情報
                     var arrayData = JSON.parse(data.d);
 
@@ -705,25 +711,13 @@
 
         function searchResultUpdate() {
             searchCustomer(
-                "SearchButton_Click",
+                "search",
                 function (data) {
-                    const result = data.d;
-
-                    // 処理中にエラーが発生した場合、"failed"が返される
-                    // アラートでエラーメッセージを表示してこの後の処理を実行しない
-                    if (result == "failed") {
-                        alert("検索処理中にエラーが発生しました");
-                        return false;
-                    }
+                    const members = data["members"];
 
                     columnNamePrev = "id";
                     desc = false;
                     changeIdSortIndicatior();
-
-                    const parsedData = JSON.parse(result);
-
-                    // DBから取得した情報
-                    var arrayData = parsedData["result"];
 
                     // テーブル要素
                     var table = document.getElementById('search-result');
@@ -738,13 +732,13 @@
                     }
 
                     // 結果が0件なら、ヘッダーを非表示にしてテーブル作成処理を実行しない
-                    if (arrayData.length == 0) {
+                    if (members.length == 0) {
                         tableHeader.style.display = 'none';
                     } else {
                         // 取得したデータを元にテーブルを作成する
-                        for (var i = 0; i < arrayData.length; i++) {
+                        for (var i = 0; i < members.length; i++) {
                             // 取得したデータの1行
-                            var arrayRow = arrayData[i];
+                            var arrayRow = members[i];
 
                             console.log(JSON.stringify(arrayRow, null, '\t'));
 
@@ -756,7 +750,7 @@
                             const birthday = arrayRow["birthday"];
                             const gender = arrayRow["gender"];
                             const prefecture = arrayRow["prefecture"];
-                            const membershipStatus = arrayRow["membershipStatus"];
+                            const membershipStatus = arrayRow["memberStatus"];
 
                             // 取得したデータをtableに表示するために格納する配列
                             const tableRow = [
@@ -812,7 +806,7 @@
 
                     // セッションに検索結果の件数を保存する
                     // 返されたJsonから件数を取得する
-                    const resultCount = parsedData["resultCount"];
+                    const resultCount = data["resultCount"];
 
                     // resultCountをsessionStorageに保存する
                     sessionStorage.setItem('resultCount', resultCount);
@@ -833,8 +827,7 @@
                 },
                 function () {
                     alert("検索に失敗しました");
-                },
-                false
+                }
             );
         }
 
@@ -965,7 +958,7 @@
         // 会員情報を取得する
         // 呼び出すC#メソッド名、取得成功時の処理、失敗時の処理、結果を全て取得するかのフラグを引数に取る
         // resultAllにtrueを渡すと、結果が10件など(1ページに表示させる件数)に制限されず全て返ってくる
-        function searchCustomer(cSharpMethodName, success, failure, resultAll) {
+        function searchCustomer(action, success, failure) {
             // ユーザーが入力した検索条件を取得する
             const querys = getSearchQuery();
 
@@ -983,21 +976,20 @@
 
             $.ajax({
                 type: "POST",
-                url: 'MemberSearchServlet' + cSharpMethodName,
-                contentType: "application/json",
-                data: JSON.stringify({
-                    "idStr": id,
-                    "emailStr": email,
-                    "nameStr": name,
-                    "nameKanaStr": nameKana,
-                    "birthStartStr": birthStart,
-                    "birthEndStr": birthEnd,
-                    "prefectureStr": prefecture,
-                    "genderStr": gender,
-                    "memberStatusStr": memberStatus,
+                url: 'MemberSearch',
+                data: {
+                    "id": id,
+                    "email": email,
+                    "name": name,
+                    "nameKana": nameKana,
+                    "birthStart": birthStart,
+                    "birthEnd": birthEnd,
+                    "prefectureId": prefecture,
+                    "gender": gender,
+                    "memberStatus": memberStatus,
                     "pageNumber": pageNumber,
-                    "resultAll": resultAll
-                }),
+                    "action": action
+                },
                 success: function (data) {
                     success(data);
                 },

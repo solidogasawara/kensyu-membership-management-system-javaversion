@@ -9,5 +9,9 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/MySQL/Connector J 8.0/mysql-connector-j-8.0.33.jar"/>
+	<classpathentry kind="lib" path="C:/Users/SD-PC026/Documents/kensyu_member_management/MemberManagementSystem/lib/jackson-annotations-2.15.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/SD-PC026/Documents/kensyu_member_management/MemberManagementSystem/lib/jackson-core-2.15.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/SD-PC026/Documents/kensyu_member_management/MemberManagementSystem/lib/jackson-databind-2.15.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

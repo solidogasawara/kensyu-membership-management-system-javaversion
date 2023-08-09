@@ -1,4 +1,4 @@
-package model;
+package model.namedparameter;
 
 public class NamedParameterItem {
 	// パラメータの順番

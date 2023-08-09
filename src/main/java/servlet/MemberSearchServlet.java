@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -9,6 +11,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import bean.MemberInfoBean;
+import bean.SearchParamsBean;
+import dao.MemberSearchDAO;
+import model.json.JsonResponseSender;
+import model.json.SearchResult;
+import service.MemberSearchService;
 
 /**
  * Servlet implementation class MemberSearch
@@ -31,19 +40,84 @@ public class MemberSearchServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/MemberSearch.jsp");
 		dispatcher.forward(request, response);
+		
+		MemberSearchDAO dao = new MemberSearchDAO();
+		
+		SearchParamsBean params = new SearchParamsBean();
+		
+		params.setName("田中*");
+		
+		dao.getMemberInfosBySearch(params).forEach(c -> System.out.println(c.getName()));
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Map<String, String[]> map = request.getParameterMap();
+		String action = request.getParameter("action");
 		
-		System.out.println(map.size());
+		System.out.println(request.getParameterMap().size());
+		request.getParameterMap().entrySet().forEach(e -> System.out.println("key: " + e.getKey() + " value: " + Arrays.asList(e.getValue())));
 		
-		for(Map.Entry<String, String[]> entry : map.entrySet()) {
-			System.out.println(entry.getKey() + " : " + entry.getValue());
+		switch(action) {
+		case "search":
+			// 1ページに何件結果を表示するか
+			final int LIMIT = 10;
+			
+			// 性別が男性、女性の両方ともチェックが入っていた場合か、
+			// 会員状態が有効、退会の両方ともチェックが入っていた場合は
+			// 全件検索する
+			String gender = "";
+			String memberStatus = "";
+			
+			gender = request.getParameter("gender");
+			memberStatus = request.getParameter("memberStatus");
+			
+			// 両方ともチェックが入っていた場合、「both」が渡される
+			if("both".equals(gender) || "both".equals(memberStatus)) {
+				SearchResult result = new SearchResult();
+				
+				try {
+					MemberSearchService service = new MemberSearchService();
+					
+					String pageNumberStr = request.getParameter("pageNumber");
+					int pageNumber = Integer.parseInt(pageNumberStr);
+					
+					List<MemberInfoBean> members = service.getLimitedMemberInfos(LIMIT, pageNumber);
+					int count = service.getMemberInfosCount();
+					
+					result.setMembers(members);
+					result.setResultCount(count);
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+				
+				JsonResponseSender sender = new JsonResponseSender(result, response);
+				sender.send();
+				
+				return;
+			}
+			
+			MemberSearchService service = new MemberSearchService();
+			Map<String, String[]> params = request.getParameterMap();
+			
+			List<MemberInfoBean> members = service.getLimitedMemberInfosBySearch(params, LIMIT);
+			int count = service.getMemberInfosCountBySearch(params);
+			
+			SearchResult result = new SearchResult(members, count);
+			
+			JsonResponseSender sender = new JsonResponseSender(result, response);
+			sender.send();
+			
+			break;
+		case "memberDelete":
+			break;
+		case "csvUpload":
+			break;
+		case "tableSort":
+			
+			
+			break;
 		}
 	}
-
 }

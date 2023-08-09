@@ -1,9 +1,10 @@
-package model;
+package model.namedparameter;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.mysql.cj.util.StringUtils;
 
 /**
  * 名前付きパラメータを使用したSQL文からPreparedStatementを生成するクラス
@@ -45,6 +48,27 @@ public class NamedParameterStatement {
 		parameterNames = new ArrayList<String>();
 	}
 	
+	/**
+	 * コンストラクタ
+	 * 
+	 * 引数無し
+	 */
+	public NamedParameterStatement() {
+		this.con = null;
+		this.sql = "";
+		
+		items = new ArrayList<NamedParameterItem>();
+		parameterNames = new ArrayList<String>();
+	}
+	
+	public void setConnection(Connection con) {
+		this.con = con;
+	}
+
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+
 	/*
 	 * パラメータを追加するメソッド
 	 * 実際には、NamedParameterItemにパラメータ名やデータを格納しているだけで、
@@ -52,7 +76,6 @@ public class NamedParameterStatement {
 	 * 
 	 * 同じパラメータ名を使用することはできず、使用した場合は例外が投げられる
 	 * */
-	
 	public void parameterAdd(String name, Integer value) {
 		if(!parameterNames.contains(name)) {
 			NamedParameterItem item = new NamedParameterItem();
@@ -63,7 +86,7 @@ public class NamedParameterStatement {
 	        items.add(item);
 	        parameterNames.add(name);
 		} else {
-			throw new DuplicateParameterNameException();
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
     }
 	
@@ -76,20 +99,20 @@ public class NamedParameterStatement {
 	        
 	        items.add(item);
 		} else {
-			throw new DuplicateParameterNameException();
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
     }
 	
-	public void parameterAdd(String name, Date value) {
+	public void parameterAdd(String name, Timestamp value) {
 		if(!parameterNames.contains(name)) {
 			NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);
 	        item.setValue(value);
-	        item.setDataType(Date.class);
+	        item.setDataType(Timestamp.class);
 	        
 	        items.add(item);
 		} else {
-			throw new DuplicateParameterNameException();
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
     }
 	
@@ -102,7 +125,7 @@ public class NamedParameterStatement {
 	        
 	        items.add(item);
 		} else {
-			throw new DuplicateParameterNameException();
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
     }
 	
@@ -115,7 +138,7 @@ public class NamedParameterStatement {
 	        
 	        items.add(item);
 		} else {
-			throw new DuplicateParameterNameException();
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
     }
 	
@@ -127,6 +150,11 @@ public class NamedParameterStatement {
 		// indexOfメソッドを利用してパラメータ名の文字位置を調べてMapに格納する
         for(NamedParameterItem item : items) {
             int index = sql.indexOf(item.getParameterName());
+            
+            // もし指定されたパラメータ名がSQL文から見つからなかった場合例外を投げる
+            if(index == -1) {
+            	throw new NamedParameterStatementException(NamedParameterStatementException.MES_NOT_USED_PARAMETERNAME + item.getParameterName());
+            }
             
             parameterMap.put(item.getParameterName(), index);
         }
@@ -170,6 +198,18 @@ public class NamedParameterStatement {
 	}
 	
 	public PreparedStatement prepareStatement() throws SQLException {
+		// SQL文が空でないかチェックする
+		// 空なら例外を投げる
+		if(StringUtils.isNullOrEmpty(sql)) {
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_EMPTY_SQL);
+		}
+		
+		// Connectionオブジェクトがnullでないかチェックする
+		// nullなら例外を投げる
+		if(con == null) {
+			throw new NamedParameterStatementException(NamedParameterStatementException.MES_NULL_CONNECTION);
+		}
+		
 		// インデックスを計算
 		calcurateIndex();
 		
