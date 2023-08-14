@@ -376,13 +376,13 @@ main .search-form td{
     width: 40%;
 }
 main .search-form input[name="name"] {
-    width: 92%;
+    width: calc(100% - 4.0rem);
 }
 main .search-form .hint-button {
     position: absolute;
     right: 0;
     top: 0;
-    width: 8%;
+    width: 4.0rem;
     height: 100%;
     text-align: center;
     font-size: 1.5rem;
