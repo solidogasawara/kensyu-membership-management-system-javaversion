@@ -27,6 +27,9 @@ public class MemberSearchDAO {
 		List<MemberInfoBean> members = null;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return null;
+			}
 			
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			ResultSet result = pstmt.executeQuery();
@@ -80,6 +83,9 @@ public class MemberSearchDAO {
 		int count = -1;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return -1;
+			}
 			
 			String sql = "SELECT COUNT(*) AS count FROM " + TABLE_NAME + " WHERE delete_flag = FALSE";
 			
@@ -102,6 +108,9 @@ public class MemberSearchDAO {
 		int count = -1;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return -1;
+			}
 			
 			StringBuilder sqlSb = new StringBuilder();
             
@@ -142,6 +151,10 @@ public class MemberSearchDAO {
 		List<MemberInfoBean> members = null;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return null;
+			}
+			
 			NamedParameterStatement npstmt = new NamedParameterStatement();
 			StringBuilder sqlSb = new StringBuilder();
 			
@@ -172,7 +185,6 @@ public class MemberSearchDAO {
 			members = getMemberInfoListByResultSet(result);
 			
 		} catch (SQLException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		
@@ -184,6 +196,10 @@ public class MemberSearchDAO {
 		List<MemberInfoBean> members = null;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return null;
+			}
+			
 			NamedParameterStatement npstmt = new NamedParameterStatement();
 			StringBuilder sqlSb = new StringBuilder();
 			
@@ -215,6 +231,10 @@ public class MemberSearchDAO {
 		List<MemberInfoBean> members = null;
 		
 		try(Connection con = DBManager.getConnection()) {
+			if(con == null) {
+				return null;
+			}
+			
 			NamedParameterStatement npstmt = new NamedParameterStatement();
 			StringBuilder sqlSb = new StringBuilder();
 			
