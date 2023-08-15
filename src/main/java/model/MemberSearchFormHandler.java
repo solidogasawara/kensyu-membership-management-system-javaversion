@@ -97,7 +97,7 @@ public class MemberSearchFormHandler {
 						 
 						Timestamp ts = Timestamp.valueOf(ldt);
 						 
-						bean.setBirthStart(ts);	
+						bean.setBirthEnd(ts);	
 					} catch(Exception e) {
 						e.printStackTrace();
 					}	
