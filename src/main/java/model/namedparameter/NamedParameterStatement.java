@@ -1,7 +1,6 @@
 package model.namedparameter;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -98,6 +97,7 @@ public class NamedParameterStatement {
 	        item.setDataType(String.class);
 	        
 	        items.add(item);
+	        parameterNames.add(name);
 		} else {
 			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
@@ -111,6 +111,7 @@ public class NamedParameterStatement {
 	        item.setDataType(Timestamp.class);
 	        
 	        items.add(item);
+	        parameterNames.add(name);
 		} else {
 			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
@@ -124,6 +125,7 @@ public class NamedParameterStatement {
 	        item.setDataType(Double.class);
 	        
 	        items.add(item);
+	        parameterNames.add(name);
 		} else {
 			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
@@ -137,6 +139,7 @@ public class NamedParameterStatement {
 	        item.setDataType(Boolean.class);
 	        
 	        items.add(item);
+	        parameterNames.add(name);
 		} else {
 			throw new NamedParameterStatementException(NamedParameterStatementException.MES_CANNOT_USE_SAME_PARAMETERNAME);
 		}
@@ -230,10 +233,10 @@ public class NamedParameterStatement {
 				String value = (String) item.getValue();
 				
 				pstmt.setString(item.getIndex(), value);
-			} else if (item.getDataType() == Date.class) {
-				Date value = (Date) item.getValue();
+			} else if (item.getDataType() == Timestamp.class) {
+				Timestamp value = (Timestamp) item.getValue();
 				
-				pstmt.setDate(item.getIndex(), value);
+				pstmt.setTimestamp(item.getIndex(), value);
 			} else if (item.getDataType() == Double.class) {
 				Double value = (Double) item.getValue();
 				

@@ -26,11 +26,19 @@ public class DBManager {
 	}
 	
 	public static Connection getConnection() throws SQLException {
-		loadPropertiesFile();
+		Connection con = null;
 		
-		String accessUrl = URL + DB_NAME + "?";
-		
-		Connection con = DriverManager.getConnection(accessUrl, USER_NAME, PASSWORD);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			
+			loadPropertiesFile();
+			
+			String accessUrl = URL + DB_NAME + "?";
+			
+			con = DriverManager.getConnection(accessUrl, USER_NAME, PASSWORD);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		
 		return con;
 	}
