@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import bean.MemberInfoBean;
-import bean.SearchParamsBean;
-import dao.MemberSearchDAO;
 import model.json.JsonResponseSender;
 import model.json.SearchResult;
 import service.MemberSearchService;
@@ -40,14 +38,6 @@ public class MemberSearchServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/MemberSearch.jsp");
 		dispatcher.forward(request, response);
-		
-		MemberSearchDAO dao = new MemberSearchDAO();
-		
-		SearchParamsBean params = new SearchParamsBean();
-		
-		params.setName("田中*");
-		
-		dao.getMemberInfosBySearch(params).forEach(c -> System.out.println(c.getName()));
 	}
 
 	/**
