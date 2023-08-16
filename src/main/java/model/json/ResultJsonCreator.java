@@ -3,10 +3,10 @@ package model.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ResultJsonCreator {
-	private SearchResult result;
+public class ResultJsonCreator<T> {
+	private T result;
 
-	public ResultJsonCreator(SearchResult result) {
+	public ResultJsonCreator(T result) {
 		this.result = result;
 	}
 

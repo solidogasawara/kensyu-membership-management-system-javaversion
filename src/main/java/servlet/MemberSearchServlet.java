@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import bean.MemberInfoBean;
 import model.json.JsonResponseSender;
 import model.json.SearchResult;
+import model.json.SearchResultSender;
 import service.MemberSearchService;
 
 /**
@@ -46,7 +47,6 @@ public class MemberSearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
 		
-		System.out.println(request.getParameterMap().size());
 		request.getParameterMap().entrySet().forEach(e -> System.out.println("key: " + e.getKey() + " value: " + Arrays.asList(e.getValue())));
 		
 		switch(action) {
@@ -82,7 +82,7 @@ public class MemberSearchServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 				
-				JsonResponseSender sender = new JsonResponseSender(result, response);
+				JsonResponseSender sender = new SearchResultSender(result, response);
 				sender.send();
 				
 				return;
@@ -96,7 +96,7 @@ public class MemberSearchServlet extends HttpServlet {
 			
 			SearchResult result = new SearchResult(members, count);
 			
-			JsonResponseSender sender = new JsonResponseSender(result, response);
+			JsonResponseSender sender = new SearchResultSender(result, response);
 			sender.send();
 			
 			break;

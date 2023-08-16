@@ -6,7 +6,7 @@ import java.util.Map;
 import bean.MemberInfoBean;
 import bean.SearchParamsBean;
 import dao.MemberSearchDAO;
-import model.MemberSearchFormHandler;
+import model.handler.MemberSearchFormHandler;
 
 public class MemberSearchService {
 	public int getMemberInfosCount() {
