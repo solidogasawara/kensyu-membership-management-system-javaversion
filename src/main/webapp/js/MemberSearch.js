@@ -620,6 +620,7 @@ function sortTable(columnName) {
     // 下のsortメソッドを利用するためにArray化している
     let rows = Array.from(tBody.rows);
     
+    // ソート後のテーブルの列を構成するオブジェクト
     const fragment = document.createDocumentFragment();
     
     // カラム
@@ -659,46 +660,18 @@ function sortTable(columnName) {
 		});
 	}
 	
+	// ソート後の順番でfragmentにrowを追加する
 	for(const row of rows) {
 		fragment.appendChild(row.cloneNode(true));
 	}
 	
+	// 現在表示されているテーブルの列を削除する
 	while(table.tBodies[0].firstChild) {
 		table.tBodies[0].removeChild(table.tBodies[0].firstChild);
 	}
 	
+	// テーブルをソート後のものに更新する
 	table.tBodies[0].appendChild(fragment);
-
-//    // テーブル情報と、並び替えの基準となるカラム名、並び替え順をサーバ側に渡して
-//    // サーバ側でソートしたものを受け取る
-//    // 受け取ったものをテーブルに入れて画面上での並び替えを完了させる
-//    $.ajax({
-//        type: "POST",
-//        url: '<%= request.getContextPath() %>/MemberSearch',
-//        data: {
-//            "tableData": tableData,
-//            "columnName": columnName,
-//            "sortMethod": desc ? "desc" : "asc",
-//            "action": "tableSort"
-//        },
-//        success: function (data) {
-//            // ソートされたテーブル情報
-//            var arrayData = JSON.parse(data.d);
-//
-//            // ソートされたテーブル情報を元にテーブルを更新する
-//            // 実際にデータが入っている行は2行目からなので、iは1
-//            for (var i = 1; i < table.rows.length; i++) {
-//                var dataRow = arrayData[i - 1];
-//                var tableRow = table.rows[i];
-//                for (var j = 0; j < tableRow.cells.length - 1; j++) {
-//                    tableRow.cells[j].innerText = dataRow[j];
-//                }
-//            }
-//        },
-//        error: function (result) {
-//            alert("失敗: " + result.status);
-//        }
-//    });
 }
 
 function changeIdSortIndicatior() {
