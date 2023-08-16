@@ -1,4 +1,4 @@
-package model;
+package model.handler;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
