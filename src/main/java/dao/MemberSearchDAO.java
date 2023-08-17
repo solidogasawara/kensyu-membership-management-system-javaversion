@@ -25,19 +25,37 @@ public class MemberSearchDAO {
 	
 	private List<MemberInfoBean> getMemberInfosBySQL(String sql) {
 		List<MemberInfoBean> members = null;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
 				return null;
 			}
 			
-			PreparedStatement pstmt = con.prepareStatement(sql);
-			ResultSet result = pstmt.executeQuery();
+			pstmt = con.prepareStatement(sql);
+			result = pstmt.executeQuery();
 			
 			members = getMemberInfoListByResultSet(result);
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return members;
@@ -46,6 +64,10 @@ public class MemberSearchDAO {
 	// ResultSetオブジェクトからデータを取得して、MemberInfoBeanオブジェクトをListに格納して返すメソッド
 	private List<MemberInfoBean> getMemberInfoListByResultSet(ResultSet result) throws SQLException {
 		List<MemberInfoBean> members = new ArrayList<>();
+		
+		if(result == null) {
+			return null;
+		}
 		
 		while(result.next()) {
 			MemberInfoBean member = new MemberInfoBean();
@@ -81,6 +103,8 @@ public class MemberSearchDAO {
 	// 保存されている会員情報の数を取得するメソッド
 	public int getMemberInfosCount() {
 		int count = -1;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
@@ -89,8 +113,8 @@ public class MemberSearchDAO {
 			
 			String sql = "SELECT COUNT(*) AS count FROM " + TABLE_NAME + " WHERE delete_flag = FALSE";
 			
-			PreparedStatement pstmt = con.prepareStatement(sql);
-			ResultSet result = pstmt.executeQuery();
+			pstmt = con.prepareStatement(sql);
+			result = pstmt.executeQuery();
 			
 			if(result.next()) {
 				count = result.getInt("count");
@@ -98,6 +122,22 @@ public class MemberSearchDAO {
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return count;
@@ -106,6 +146,8 @@ public class MemberSearchDAO {
 	// 検索条件ありで検索した結果が何件か取得するメソッド
 	public int getMemberInfosCountBySearch(SearchParamsBean params) {
 		int count = -1;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
@@ -123,8 +165,8 @@ public class MemberSearchDAO {
             npstmt.setConnection(con);
             npstmt.setSql(sql);
             
-			PreparedStatement pstmt = npstmt.prepareStatement();
-			ResultSet result = pstmt.executeQuery();
+			pstmt = npstmt.prepareStatement();
+			result = pstmt.executeQuery();
 			
 			if(result.next()) {
 				count = result.getInt("count");
@@ -132,6 +174,22 @@ public class MemberSearchDAO {
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return count;
@@ -149,6 +207,8 @@ public class MemberSearchDAO {
 	// 検索条件なしで会員情報を取得し、取得するデータ数に制限をかけて取得するメソッド
 	public List<MemberInfoBean> getLimitedMemberInfos(int limit, int offset) {
 		List<MemberInfoBean> members = null;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
@@ -178,14 +238,30 @@ public class MemberSearchDAO {
 			npstmt.setSql(sql);
 			npstmt.setConnection(con);
 			
-			PreparedStatement pstmt = npstmt.prepareStatement();
+			pstmt = npstmt.prepareStatement();
 			
-			ResultSet result = pstmt.executeQuery();
+			result = pstmt.executeQuery();
 			
 			members = getMemberInfoListByResultSet(result);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return members;
@@ -194,6 +270,8 @@ public class MemberSearchDAO {
 	// 検索条件付きで会員情報を取得するメソッド
 	public List<MemberInfoBean> getMemberInfosBySearch(SearchParamsBean params) {
 		List<MemberInfoBean> members = null;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
@@ -210,17 +288,30 @@ public class MemberSearchDAO {
 			npstmt.setSql(sql);
 			npstmt.setConnection(con);
 			
-			PreparedStatement pstmt = npstmt.prepareStatement();
+			pstmt = npstmt.prepareStatement();
 			
-			System.out.println(pstmt.toString());
-			
-			ResultSet result = pstmt.executeQuery();
+			result = pstmt.executeQuery();
 			
 			members = getMemberInfoListByResultSet(result);
 			
 		} catch (SQLException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return members;
@@ -229,6 +320,8 @@ public class MemberSearchDAO {
 	// 検索条件付きで会員情報を取得し、取得するデータ数に制限をかけて取得するメソッド
 	public List<MemberInfoBean> getLimitedMemberInfosBySearch(SearchParamsBean params, int limit, int offset) {
 		List<MemberInfoBean> members = null;
+		PreparedStatement pstmt = null;
+		ResultSet result = null;
 		
 		try(Connection con = DBManager.getConnection()) {
 			if(con == null) {
@@ -254,17 +347,30 @@ public class MemberSearchDAO {
 			npstmt.setSql(sql);
 			npstmt.setConnection(con);
 			
-			PreparedStatement pstmt = npstmt.prepareStatement();
+			pstmt = npstmt.prepareStatement();
 			
-			System.out.println(pstmt);
-			
-			ResultSet result = pstmt.executeQuery();
+			result = pstmt.executeQuery();
 			
 			members = getMemberInfoListByResultSet(result);
 			
 		} catch (SQLException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
+		} finally {
+			if(result != null) {
+				try {
+					result.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return members;
