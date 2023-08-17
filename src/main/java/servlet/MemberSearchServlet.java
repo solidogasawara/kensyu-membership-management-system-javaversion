@@ -104,10 +104,6 @@ public class MemberSearchServlet extends HttpServlet {
 			break;
 		case "csvUpload":
 			break;
-		case "tableSort":
-			
-			
-			break;
 		}
 	}
 }
