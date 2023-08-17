@@ -75,7 +75,7 @@ public class NamedParameterStatement {
 	 * 
 	 * 同じパラメータ名を使用することはできず、使用した場合は例外が投げられる
 	 * */
-	public void parameterAdd(String name, Integer value) {
+	public void addParameter(String name, Integer value) {
 		if(!parameterNames.contains(name)) {
 			NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);
@@ -89,7 +89,7 @@ public class NamedParameterStatement {
 		}
     }
 	
-	public void parameterAdd(String name, String value) {
+	public void addParameter(String name, String value) {
 		if(!parameterNames.contains(name)) {
 	        NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);
@@ -103,7 +103,7 @@ public class NamedParameterStatement {
 		}
     }
 	
-	public void parameterAdd(String name, Timestamp value) {
+	public void addParameter(String name, Timestamp value) {
 		if(!parameterNames.contains(name)) {
 			NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);
@@ -117,7 +117,7 @@ public class NamedParameterStatement {
 		}
     }
 	
-	public void parameterAdd(String name, Double value) {
+	public void addParameter(String name, Double value) {
 		if(!parameterNames.contains(name)) {
 	        NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);
@@ -131,7 +131,7 @@ public class NamedParameterStatement {
 		}
     }
 	
-	public void parameterAdd(String name, Boolean value) {
+	public void addParameter(String name, Boolean value) {
 		if(!parameterNames.contains(name)) {
 	        NamedParameterItem item = new NamedParameterItem();
 	        item.setParameterName(name);

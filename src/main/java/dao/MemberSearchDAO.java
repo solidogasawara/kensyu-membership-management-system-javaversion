@@ -230,8 +230,8 @@ public class MemberSearchDAO {
             sqlSb.append("OFFSET @offset");
 			
             // limitとoffsetを設定する
-            npstmt.parameterAdd("@limit", limit);
-            npstmt.parameterAdd("@offset", offset);
+            npstmt.addParameter("@limit", limit);
+            npstmt.addParameter("@offset", offset);
             
 			String sql = sqlSb.toString();
 			
@@ -339,8 +339,8 @@ public class MemberSearchDAO {
             sqlSb.append("OFFSET @offset");
 			
             // limitとoffsetを設定する
-            npstmt.parameterAdd("@limit", limit);
-            npstmt.parameterAdd("@offset", offset);
+            npstmt.addParameter("@limit", limit);
+            npstmt.addParameter("@offset", offset);
             
 			String sql = sqlSb.toString();
 			
@@ -439,7 +439,7 @@ public class MemberSearchDAO {
         // idが-1以外なら、検索入力欄に入力されたとして検索条件に追加する
         if(id != -1) {        	
         	conditions.add("c.id = @id");
-        	npstmt.parameterAdd("@id", id);
+        	npstmt.addParameter("@id", id);
         }
         
         // nameがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
@@ -455,21 +455,21 @@ public class MemberSearchDAO {
                 conditions.add("c.name LIKE @name" + (doubleIdx - 1));
                 conditions.add("REPLACE(c.name, ' ', '') LIKE @name" + doubleIdx);
 
-                npstmt.parameterAdd("@name" + (doubleIdx - 1), sName);
-                npstmt.parameterAdd("@name" + doubleIdx, sName);
+                npstmt.addParameter("@name" + (doubleIdx - 1), sName);
+                npstmt.addParameter("@name" + doubleIdx, sName);
             }
         }
         
         // nameKanaがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
         if (nameKana != null) {
             conditions.add("name_kana LIKE @nameKana");
-            npstmt.parameterAdd("@nameKana", "%" + nameKana + "%");
+            npstmt.addParameter("@nameKana", "%" + nameKana + "%");
         }
 
         // emailがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
         if(email != null) {
         	conditions.add("mail = @email");
-            npstmt.parameterAdd("@email", email);
+            npstmt.addParameter("@email", email);
         }
         
         // birthStartとbirthEndのどちらかがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
@@ -482,27 +482,27 @@ public class MemberSearchDAO {
         	}
         	
         	conditions.add("birthday BETWEEN @birthStart AND @birthEnd");
-            npstmt.parameterAdd("@birthStart", birthStart);
-            npstmt.parameterAdd("@birthEnd", birthEnd);
+            npstmt.addParameter("@birthStart", birthStart);
+            npstmt.addParameter("@birthEnd", birthEnd);
         }
         
         // genderがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
         if (gender != null) {
             conditions.add("gender = @gender");
-            npstmt.parameterAdd("@gender", gender.getBitNum());
+            npstmt.addParameter("@gender", gender.getBitNum());
         }
 
         // prefectureIdが-1以外なら、検索入力欄に入力されたとして検索条件に追加する
         if(prefectureId != -1) {
         	conditions.add("prefecture_id = @prefecture");
-            npstmt.parameterAdd("@prefecture", prefectureId);	
+            npstmt.addParameter("@prefecture", prefectureId);	
         }
 
         // memberStatusがnull以外なら、検索入力欄に入力されたとして検索条件に追加する
         if (memberStatus != null) {
             // 検索条件(membership_status)
             conditions.add("membership_status = @memberStatus");
-            npstmt.parameterAdd("@memberStatus", memberStatus.getBitNum());
+            npstmt.addParameter("@memberStatus", memberStatus.getBitNum());
         }
 
      // conditionsに追加された条件があればANDで結合してSQLに追加
